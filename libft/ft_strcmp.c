@@ -6,18 +6,13 @@
 /*   By: nglynis <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/04 20:54:53 by nglynis           #+#    #+#             */
-/*   Updated: 2019/09/12 00:46:06 by nglynis          ###   ########.fr       */
+/*   Updated: 2019/10/04 15:03:02 by nglynis          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int		ft_strcmp(char *s1, char *s2)
+int		ft_strcmp(const char *s1, const char *s2)
 {
-	int i;
-
-	i = 0;
-	if (s1[i] != '\0' && s2[i] != '\0' && s1[i] == s2[i])
-		i++;
-	return (s1[i] - s2[i]);
+	return (ft_strncmp(s1, s2, SIZE_MAX));
 }

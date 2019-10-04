@@ -5,33 +5,33 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: nglynis <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/09/07 15:22:25 by nglynis           #+#    #+#             */
-/*   Updated: 2019/09/12 00:44:25 by nglynis          ###   ########.fr       */
+/*   Created: 2019/09/22 18:29:34 by nglynis           #+#    #+#             */
+/*   Updated: 2019/09/22 18:31:18 by nglynis          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int		ft_atoi(char *str)
+int		ft_atoi(const char *str)
 {
-	int i;
-	int count;
-	int nb;
+	long long	r;
+	int			n;
 
-	i = 0;
-	nb = 1;
-	count = 0;
-	while (str[i] == ' ' || str[i] == '\t' || str[i] == '\v'
-			|| str[i] == '\r' || str[i] == '\f' || str[i] == '\n')
-		i++;
-	if (str[i] == '-')
-		nb = -nb;
-	if (str[i] == '-' || str[i] == '+')
-		i++;
-	while (str[i] >= '0' && str[i] <= '9')
+	r = 0;
+	while (*str == ' ' || *str == '\n' || *str == '\r'
+			|| *str == '\f' || *str == '\t' || *str == '\v')
+		str++;
+	n = (*str == '-') ? (-1) : (1);
+	if (*str == '+' || *str == '-')
+		str++;
+	while (*str && *str >= '0' && *str <= '9')
 	{
-		count = count * 10 + (str[i] - '0');
-		i++;
+		r = r * 10 + (*str - 48);
+		str++;
 	}
-	return (count * nb);
+	if (r * n > 0 && n < 0)
+		return (0);
+	if (r * n < 0 && n > 0)
+		return (-1);
+	return ((int)r * n);
 }
