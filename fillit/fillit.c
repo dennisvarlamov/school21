@@ -6,7 +6,7 @@
 /*   By: nglynis <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/14 20:03:11 by nglynis           #+#    #+#             */
-/*   Updated: 2019/11/27 12:59:06 by nglynis          ###   ########.fr       */
+/*   Updated: 2019/12/27 08:29:31 by nglynis          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,14 @@
 
 size_t		ft_countchr(const char *s, int c)
 {
-	size_t		i;
 	size_t		j;
 
-	i = 0;
 	j = 0;
-	while (*(s + i) != '\0')
+	while (*s != '\0')
 	{
-		if (*(s + i) == (char)c)
+		if (*s == (char)c)
 			j++;
-		i++;
+		s++;
 	}
 	return (j);
 }
@@ -53,7 +51,6 @@ int		ft_check1(char *s, size_t k)
 	while (j >= 0)
 		j -= 4;
 	j += 4;
-	printf("k : %zu\n",k);
 	if ((k > 3) && s[k - 4] == '#')
 		i++;
 	if ((k + 4) < 17 && s[k + 4] == '#')
@@ -64,96 +61,122 @@ int		ft_check1(char *s, size_t k)
 			i++;
 	return (i);
 }
+int			ft_check2(char *str)
+{
+	int		j;
+	x_list  x;
+	char *I1[19]= {"#...#...#...#", "####", "#...#...##", "#.###",
+		"##...#...#", "###.#", "#...#..##", "###...#", "##..#...#",
+		"#...###", "#..###", "#..##...#", "###..#","#...##..#",
+		"##...##", "#..##..#","##.##", "#...##...#", "##..##"};
+
+	j =  0;
+	x.nol1 = ft_numbchr(str,'#',1);
+	x.nol2 = ft_numbchr(str,'#',2);
+	x.nol3 = ft_numbchr(str,'#',3);
+	x.nol4 = ft_numbchr(str,'#',4);
+	x.a = ft_check1(str,x.nol1 - str);
+	x.b = ft_check1(str,x.nol2 - str);
+	x.c = ft_check1(str,x.nol3 - str);
+	x.d = ft_check1(str,x.nol4 - str);
+	if ((x.a * x.b * x.c * x.d == 0) || (x.b < 2 && x.c < 2 && x.a < 2))
+		return (0);
+	str = ft_strsub(str,x.nol1 - str , x.nol4 - x.nol1 + 1);
+	while (ft_strcmp(I1[j],str) != 0)
+		j++;
+	ft_strdel(&str);
+	if (j == 0)
+		j = 19;
+	return (j);
+}
+
 int		main(int argc, char **argv)
 {
 	int fd;
 	char *line1;
-	/* char *line2; */
 	char *str;
 	char *mass;
 	int		i;
-	int		k;
 	int		j;
-	char	*sol;
-	char	*eol;
-	char	*nol1;
-	char	*nol2;
-	char	*nol3;
-	char	*nol4;
-	int		a;
-	int		b;
-	int		c;
-	int		d;
-
-	char *I1[321]= {"#...#...#...#", "####", "#...#...##", "#.###", "##...#...#",
-		"###.#", "#...#..##", "###...#", "##..#...#", "#..###", "#..##", 
-		"#..##...#", "###..#","#...##..#", "##...##", "#..##..#", 
-		"##.##", "#...##...#", "##..##"};
-
-	k = 0;
+	int		q;
+	int		*data;
+	
 	i = 0;
 	j = 0;
-	mass = NULL;
+	q = 0;
 	if (argc < 2)
 	{
 		printf("Usage %s <filename>\n",argv[0]);
 		return(0);
 	}
+
 	fd = open(argv[1],O_RDONLY);
+	data = ft_memalloc(25);
 	while (get_next_line(fd,&line1) > 0)
 	{
-		if (ft_strlen(line1) != 4)
+		mass = str;
+		str = !(str) ? ft_strdup(line1) : ft_strjoin(str, line1);
+		if ((ft_strlen(line1) != 0 && ft_strlen(line1) != 4)
+				||  ft_strlen(str) > 16)
 		{
 			printf("INVALID\n");
 			return (0);
 		}
-		mass = str;
-		str = !(str) ? ft_strdup(line1) : ft_strjoin(str, line1);
-		k = ft_countchr(str,'#');
+		if (ft_strlen(line1) == 0 && (str == NULL || ft_strlen(str) != 16))
+		{
+				printf("INVALID\n");
+				return(0);
+		}
+		if (ft_strlen(line1) == 0 && ft_strlen(str) == 16)
+		{
+			if (ft_strlen(str) == 16 && ft_countchr(str,'.') == 16)
+				ft_strdel(&str);
+			else if (ft_strlen(str) != 16 || ft_countchr(str,'#') != 4 || ft_countchr(str,'.') != 12)
+			{
+				printf("INVALID\n");
+				return (0);
+			}
+			else
+			{
+				i = ft_check2(str);
+				data[q] = i;
+				q++;
+				ft_strdel(&str);
+			}
+		}
 		ft_strdel(&mass);
+		ft_strdel(&line1);
 	}
-	if (ft_strlen(str) != 16 || ft_countchr(str,'#') != 4 || ft_countchr(str,'.') != 12)
+	if (str != NULL && ft_strlen(str) == 16)
+	{
+		if (ft_strlen(str) == 16 && ft_countchr(str,'.') == 16)
+			ft_strdel(&str);
+		else if (ft_strlen(str) != 16 || ft_countchr(str,'#') != 4 
+			|| ft_countchr(str,'.') != 12)
+			{
+				printf("INVALID\n");
+				return (0);
+			}
+			else
+			{
+				i = ft_check2(str);
+				if (i == 0)
+					return(0);
+				/* data[q] = i; */
+				q++;
+				ft_strdel(&str);
+			}
+	}
+	else
 	{
 		printf("INVALID\n");
-		return (0);
+		return(0);
 	}
-	sol = ft_strchr(str,'#');
-	eol = ft_strrchr(str,'#');
-	nol1 = ft_numbchr(str,'#',1);
-	nol2 = ft_numbchr(str,'#',2);
-	nol3 = ft_numbchr(str,'#',3);
-	nol4 = ft_numbchr(str,'#',4);
-	/* printf("dew : %s\n",nol2); */
-	printf("a = %d\n",ft_check1(str,nol1 - str));
-	printf("b = %d\n",ft_check1(str,nol2 - str));
-	printf("c = %d\n",ft_check1(str,nol3 - str));
-	printf("d = %d\n",ft_check1(str,nol4 - str));
-	a = ft_check1(str,nol1 - str);
-	b = ft_check1(str,nol2 - str);
-	c = ft_check1(str,nol3 - str);
-	d = ft_check1(str,nol4 - str);
-	if ((a == 0 || b == 0 || c == 0 || d == 0) || (b < 2 && c < 2))
-	{
-		printf("!!!!!!!!!!!!!!!!!!!!\n");
-		printf("INVALID");
-		return (0);
-	}
-	/* printf("nol : %ld\n",nol - str); */
-	mass = str;
-	str = ft_strsub(str,sol - str , eol - sol + 1);
-	printf("work : %s\n",ft_numbchr(mass,'#', 3));
-	/* printf("mass : %s\n",mass); */
-	ft_strdel(&mass);
-	while ((i = ft_strcmp(I1[j],str)) != 0)
-	{
-		j++;
-		i = ft_strcmp(I1[j],str);
-	}
-	/* printf("i = %d\n",i); */
-	/* printf("j = %d\n",j); */
-	printf("str: %s\n",str);
-	/* //printf("eol: %s\n",eol); */
-	/* line2 = ft_strsub(str, 0, eol - sol); */
-	/* printf("line2: %s\n",line2); */
+	ft_strdel(&str);
+	if (data[0] != 0)
+		ft_fillit0(data,j);
+	else
+		printf("INVALID\n");
+	free(data);
 	return(0);
 }
